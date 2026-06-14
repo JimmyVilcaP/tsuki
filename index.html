@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Tsu ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --text-light: #f8f9fa;
+            --accent-pink: #ff9a9e;
+            --accent-purple: #c2e9fb;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #020111 10%, #20124d 90%);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Estrellas de fondo animadas */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #fff, 0 0 20px var(--accent-pink); }
+        }
+
+        /* Contenedor Principal */
+        #pantalla-bloqueo {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Textos y Títulos */
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--accent-pink);
+            margin-bottom: 15px;
+            font-size: 3rem;
+            text-shadow: 0 0 15px rgba(255, 154, 158, 0.4);
+        }
+        
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+        }
+
+        /* Estilos del Contador */
+        .contador-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tiempo-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 90px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .tiempo-box span {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .tiempo-box .label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+            color: var(--text-light);
+        }
+
+        /* Botón de Música */
+        .btn-music {
+            background: transparent;
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-music:hover {
+            background: var(--accent-purple);
+            color: #000;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .tiempo-box { min-width: 70px; padding: 15px; }
+            .tiempo-box span { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Música de fondo -->
+    <audio id="bg-music" loop>
+        <source src="./audio/musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Estrellas Animadas -->
+    <div class="stars" id="stars-container"></div>
+
+    <!-- PANTALLA DE BLOQUEO / CUENTA REGRESIVA -->
+    <div id="pantalla-bloqueo">
+        <h1>Algo especial está esperando por ti ❤️</h1>
+        <p>No importa la distancia, algunas personas logran sentirse cerca todos los días.</p>
+        
+        <div class="contador-container">
+            <div class="tiempo-box"><span id="days">00</span><div class="label">Días</div></div>
+            <div class="tiempo-box"><span id="hours">00</span><div class="label">Horas</div></div>
+            <div class="tiempo-box"><span id="minutes">00</span><div class="label">Minutos</div></div>
+            <div class="tiempo-box"><span id="seconds">00</span><div class="label">Segundos</div></div>
+        </div>
+
+        <button class="btn-music" id="music-btn">🎵 Activar Música</button>
+    </div>
+
+    <script>
+        // 🌌 GENERADOR DE ESTRELLAS
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 150; i++) {
+            let star = document.createElement('div');
+            star.className = 'star';
+            let size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // 🎵 CONTROL DE MÚSICA
+        const musicBtn = document.getElementById('music-btn');
+        const bgMusic = document.getElementById('bg-music');
+        let isPlaying = false;
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.innerText = "🎵 Activar Música";
+            } else {
+                bgMusic.play();
+                musicBtn.innerText = "🔇 Pausar Música";
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // ⏳ LÓGICA DEL CONTADOR
+        // Escribe el año actual explícitamente para evitar saltos inesperados.
+        // Formato: "Mes Día, Año Hora:Minuto:Segundo"
+        const targetDate = new Date("2026-06-15T00:00:00-03:00").getTime();
+        
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                // TIEMPO TERMINADO: Redirigir a la otra página
+                clearInterval(countdownInterval);
+                document.getElementById('pantalla-bloqueo').style.opacity = '0'; // Pequeño efecto de desvanecimiento
+                
+                setTimeout(() => {
+                    window.location.href = "felicidades.html";
+                }, 800); // Espera menos de 1 segundo para hacer el cambio
+                
+            } else {
+                // Calcular tiempo restante
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+                document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+                document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+                document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+            }
+        }, 1000);
+
+    </script>
+</body>
+</html>
