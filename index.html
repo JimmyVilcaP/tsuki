@@ -1,237 +1,425 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Tsu ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --text-light: #f8f9fa;
-            --accent-pink: #ff9a9e;
-            --accent-purple: #c2e9fb;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Tsu ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  :root {
+    --ink: #e8e2d9;
+    --ink-muted: rgba(232,226,217,0.45);
+    --ink-faint: rgba(232,226,217,0.18);
+    --rose: #c9a0a0;
+    --rose-glow: rgba(201,160,160,0.12);
+    --gold: #c8b08a;
+    --gold-faint: rgba(200,176,138,0.08);
+  }
 
-        body {
-            background: linear-gradient(to bottom, #020111 10%, #20124d 90%);
-            color: var(--text-light);
-            font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+  body {
+    background: #0c0a0f;
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
 
-        /* Estrellas de fondo animadas */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation: twinkle infinite alternate;
-        }
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 1;
+  }
 
-        @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #fff, 0 0 20px var(--accent-pink); }
-        }
+  /* ── Ambient glow blobs ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+    z-index: 0;
+  }
+  .blob-1 { width: 420px; height: 420px; background: rgba(100,60,90,0.25); top: -80px; right: -80px; }
+  .blob-2 { width: 300px; height: 300px; background: rgba(60,50,100,0.2); bottom: 0; left: -60px; }
+  .blob-3 { width: 200px; height: 200px; background: rgba(140,90,80,0.12); top: 50%; left: 50%; transform: translate(-50%,-50%); }
 
-        /* Contenedor Principal */
-        #pantalla-bloqueo {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-            transition: opacity 1s ease-in-out;
-        }
+  /* ── Canvas stars ── */
+  canvas#stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-        /* Textos y Títulos */
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            color: var(--accent-pink);
-            margin-bottom: 15px;
-            font-size: 3rem;
-            text-shadow: 0 0 15px rgba(255, 154, 158, 0.4);
-        }
-        
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #e2e8f0;
-        }
+  /* ── Layout ── */
+  #app {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    gap: 0;
+  }
 
-        /* Estilos del Contador */
-        .contador-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+  /* ── Eyebrow ── */
+  .eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.68rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.7;
+    margin-bottom: 1.4rem;
+  }
 
-        .tiempo-box {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 15px;
-            min-width: 90px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
+  /* ── Main heading ── */
+  .heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    line-height: 1.1;
+    text-align: center;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  .heading em {
+    font-style: italic;
+    color: var(--rose);
+  }
 
-        .tiempo-box span {
-            display: block;
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--accent-purple);
-        }
+  /* ── Sub ── */
+  .subtext {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: var(--ink-muted);
+    text-align: center;
+    max-width: 480px;
+    line-height: 1.75;
+    margin-bottom: 3.5rem;
+  }
 
-        .tiempo-box .label {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 5px;
-            color: var(--text-light);
-        }
+  /* ── Divider ── */
+  .divider {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, transparent, var(--rose), transparent);
+    margin: 0 auto 3.5rem;
+    opacity: 0.5;
+  }
 
-        /* Botón de Música */
-        .btn-music {
-            background: transparent;
-            border: 1px solid var(--accent-purple);
-            color: var(--accent-purple);
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            margin-top: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+  /* ── Countdown ── */
+  .countdown {
+    display: flex;
+    gap: clamp(1rem, 4vw, 2.5rem);
+    align-items: flex-start;
+    margin-bottom: 4rem;
+  }
 
-        .btn-music:hover {
-            background: var(--accent-purple);
-            color: #000;
-        }
+  .unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 2.2rem; }
-            .tiempo-box { min-width: 70px; padding: 15px; }
-            .tiempo-box span { font-size: 1.8rem; }
-        }
-    </style>
+  .unit-sep {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    color: var(--ink-faint);
+    padding-top: 0.2rem;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .num-wrap {
+    position: relative;
+    width: clamp(56px, 14vw, 76px);
+    height: clamp(64px, 15vw, 86px);
+  }
+
+  .num-border {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--rose);
+    opacity: 0.2;
+    border-radius: 4px;
+  }
+  .num-border::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid var(--gold);
+    opacity: 0.35;
+    border-radius: 2px;
+  }
+
+  .num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    transition: opacity 0.15s;
+  }
+
+  .lbl {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* ── Message line ── */
+  .message {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+    color: var(--ink-muted);
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.9;
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeUp 1.2s 0.6s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Music button ── */
+  .music-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: none;
+    border: 1px solid var(--ink-faint);
+    color: var(--ink-muted);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.4rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .music-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--rose-glow);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .music-btn:hover { border-color: var(--rose); color: var(--rose); }
+  .music-btn:hover::after { opacity: 1; }
+
+  .music-icon {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .bar {
+    width: 2px;
+    background: currentColor;
+    border-radius: 1px;
+    animation: eq 1.2s ease-in-out infinite alternate;
+  }
+  .bar:nth-child(1) { height: 6px; animation-delay: 0s; }
+  .bar:nth-child(2) { height: 10px; animation-delay: 0.2s; }
+  .bar:nth-child(3) { height: 7px; animation-delay: 0.4s; }
+  .bar:nth-child(4) { height: 4px; animation-delay: 0.1s; }
+  @keyframes eq {
+    from { transform: scaleY(0.3); }
+    to   { transform: scaleY(1.3); }
+  }
+  .music-btn.paused .bar { animation-play-state: paused; }
+
+  /* ── Footer ── */
+  .footer {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+    z-index: 2;
+  }
+</style>
 </head>
 <body>
+<audio id="bg-music" loop><source src="./audio/musica.mp3" type="audio/mpeg"></audio>
 
-    <!-- Música de fondo -->
-    <audio id="bg-music" loop>
-        <source src="./audio/musica.mp3" type="audio/mpeg">
-    </audio>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<canvas id="stars"></canvas>
 
-    <!-- Estrellas Animadas -->
-    <div class="stars" id="stars-container"></div>
+<div id="app">
+  <p class="eyebrow">Para Tsu &nbsp;·&nbsp; siempre</p>
 
-    <!-- PANTALLA DE BLOQUEO / CUENTA REGRESIVA -->
-    <div id="pantalla-bloqueo">
-        <h1>Algo especial está esperando por ti ❤️</h1>
-        <p>No importa la distancia, algunas personas logran sentirse cerca todos los días.</p>\
+  <h1 class="heading">Algo <em>especial</em><br>está cerca</h1>
 
-        
-        
-        <div class="contador-container">
-            <div class="tiempo-box"><span id="days">00</span><div class="label">Días</div></div>
-            <div class="tiempo-box"><span id="hours">00</span><div class="label">Horas</div></div>
-            <div class="tiempo-box"><span id="minutes">00</span><div class="label">Minutos</div></div>
-            <div class="tiempo-box"><span id="seconds">00</span><div class="label">Segundos</div></div>
-        </div>
+  <div class="divider"></div>
 
-        <button class="btn-music" id="music-btn">🎵 Activar Música</button>
+  <p class="subtext">La distancia no cambia lo que sientes.<br>Algunos momentos simplemente <em>tienen que llegar.</em></p>
+
+  <div class="countdown" id="countdown">
+    <div class="unit">
+      <div class="num-wrap"><div class="num-border"></div><div class="num" id="days">00</div></div>
+      <span class="lbl">días</span>
     </div>
+    <span class="unit-sep">·</span>
+    <div class="unit">
+      <div class="num-wrap"><div class="num-border"></div><div class="num" id="hours">00</div></div>
+      <span class="lbl">horas</span>
+    </div>
+    <span class="unit-sep">·</span>
+    <div class="unit">
+      <div class="num-wrap"><div class="num-border"></div><div class="num" id="mins">00</div></div>
+      <span class="lbl">minutos</span>
+    </div>
+    <span class="unit-sep">·</span>
+    <div class="unit">
+      <div class="num-wrap"><div class="num-border"></div><div class="num" id="secs">00</div></div>
+      <span class="lbl">segundos</span>
+    </div>
+  </div>
 
-    <script>
-        // 🌌 GENERADOR DE ESTRELLAS
-        const starsContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 150; i++) {
-            let star = document.createElement('div');
-            star.className = 'star';
-            let size = Math.random() * 3 + 1;
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.top = Math.random() * 100 + 'vh';
-            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            star.style.animationDelay = Math.random() * 2 + 's';
-            starsContainer.appendChild(star);
-        }
+  <p class="message">"No importa cuántas veces cuente los días,<br>siempre termino pensando en ti."</p>
 
-        // 🎵 CONTROL DE MÚSICA
-        const musicBtn = document.getElementById('music-btn');
-        const bgMusic = document.getElementById('bg-music');
-        let isPlaying = false;
+  <button class="music-btn paused" id="music-btn">
+    <span class="music-icon">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </span>
+    <span id="music-label">activar música</span>
+  </button>
+</div>
 
-        musicBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                bgMusic.pause();
-                musicBtn.innerText = "🎵 Activar Música";
-            } else {
-                bgMusic.play();
-                musicBtn.innerText = "🔇 Pausar Música";
-            }
-            isPlaying = !isPlaying;
-        });
+<div class="footer">© para ti, con todo</div>
 
-        // ⏳ LÓGICA DEL CONTADOR
-        // Escribe el año actual explícitamente para evitar saltos inesperados.
-        // Formato: "Mes Día, Año Hora:Minuto:Segundo"
-        const targetDate = new Date("2026-06-15T00:00:00-03:00").getTime();
-        
-        const countdownInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+<script>
+// Stars
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
 
-            if (distance <= 0) {
-                // TIEMPO TERMINADO: Redirigir a la otra página
-                clearInterval(countdownInterval);
-                document.getElementById('pantalla-bloqueo').style.opacity = '0'; // Pequeño efecto de desvanecimiento
-                
-                setTimeout(() => {
-                    window.location.href = "felicidades.html";
-                }, 800); // Espera menos de 1 segundo para hacer el cambio
-                
-            } else {
-                // Calcular tiempo restante
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
 
-                document.getElementById('days').innerText = days < 10 ? '0' + days : days;
-                document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
-                document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
-                document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
-            }
-        }, 1000);
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 180; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 0.9 + 0.2,
+      a: Math.random(),
+      speed: Math.random() * 0.004 + 0.002,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+}
+initStars();
 
-    </script>
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    const alpha = 0.15 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,226,217,${alpha.toFixed(3)})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+requestAnimationFrame(drawStars);
+
+// Countdown
+const target = new Date("2026-06-15T00:00:00-03:00").getTime();
+const dEl = document.getElementById('days');
+const hEl = document.getElementById('hours');
+const mEl = document.getElementById('mins');
+const sEl = document.getElementById('secs');
+
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function setNum(el, val) {
+  if (el.textContent !== val) {
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = val; el.style.opacity = '1'; }, 80);
+  }
+}
+
+function tick() {
+  const now = Date.now();
+  const dist = target - now;
+  if (dist <= 0) {
+    clearInterval(timer);
+    document.getElementById('app').style.opacity = '0';
+    document.getElementById('app').style.transition = 'opacity 1s';
+    setTimeout(() => { window.location.href = 'felicidades.html'; }, 900);
+    return;
+  }
+  const d = Math.floor(dist / 86400000);
+  const h = Math.floor((dist % 86400000) / 3600000);
+  const m = Math.floor((dist % 3600000) / 60000);
+  const s = Math.floor((dist % 60000) / 1000);
+  setNum(dEl, pad(d));
+  setNum(hEl, pad(h));
+  setNum(mEl, pad(m));
+  setNum(sEl, pad(s));
+}
+tick();
+const timer = setInterval(tick, 1000);
+
+// Music
+const audio = document.getElementById('bg-music');
+const btn = document.getElementById('music-btn');
+const lbl = document.getElementById('music-label');
+let playing = false;
+
+btn.addEventListener('click', () => {
+  if (playing) {
+    audio.pause();
+    lbl.textContent = 'activar música';
+    btn.classList.add('paused');
+  } else {
+    audio.play().catch(() => {});
+    lbl.textContent = 'pausar música';
+    btn.classList.remove('paused');
+  }
+  playing = !playing;
+});
+</script>
 </body>
 </html>
