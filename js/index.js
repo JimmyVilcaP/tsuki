@@ -387,6 +387,7 @@ for( var i = 0; i < opts.strings.length; ++i ){
 	}
 }
 
+anim();
 
 window.addEventListener( 'resize', function(){
 	
@@ -442,26 +443,3 @@ startBtn.addEventListener('click', function() {
     anim();
 });
 
-// Modificación en la función anim para mostrar el botón final
-function anim(){
-    window.requestAnimationFrame( anim );
-    
-    ctx.fillStyle = '#111';
-    ctx.fillRect( 0, 0, w, h );
-    
-    ctx.translate( hw, hh );
-    
-    var done = true;
-    for( var l = 0; l < letters.length; ++l ){
-        letters[ l ].step();
-        if( letters[ l ].phase !== 'done' )
-            done = false;
-    }
-    
-    ctx.translate( -hw, -hh );
-    
-    // Si todos los globos se fueron, mostramos el botón de "Siguiente"
-    if( done ) {
-        document.getElementById('next-btn').classList.add('show');
-    }
-}

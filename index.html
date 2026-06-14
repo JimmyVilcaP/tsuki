@@ -286,8 +286,6 @@
 
   <h1 class="heading">Algo <em>especial</em><br>está cerca</h1>
 
-  <div class="divider"></div>
-
   <p class="subtext">La distancia no cambia lo que sientes.<br>Algunos momentos simplemente <em>tienen que llegar.</em></p>
 
   <div class="countdown" id="countdown">
@@ -320,6 +318,9 @@
     </span>
     <span id="music-label">activar música</span>
   </button>
+    <a href="felicidades.html" id="btn-entrar" style="display:none; font-family:'Jost',sans-serif; font-weight:300; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:#c9a0a0; border:1px solid rgba(201,160,160,0.3); padding:0.65rem 1.8rem; border-radius:2px; text-decoration:none; margin-top:1rem; transition:all 0.3s;">
+  entrar →
+</a>
 </div>
 
 <div class="footer">© para ti, con todo</div>
@@ -383,13 +384,11 @@ function setNum(el, val) {
 function tick() {
   const now = Date.now();
   const dist = target - now;
-  if (dist <= 0) {
+if (dist <= 0) {
     clearInterval(timer);
-    document.getElementById('app').style.opacity = '0';
-    document.getElementById('app').style.transition = 'opacity 1s';
-    setTimeout(() => { window.location.href = 'felicidades.html'; }, 900);
+    document.getElementById('btn-entrar').style.display = 'block';
     return;
-  }
+}
   const d = Math.floor(dist / 86400000);
   const h = Math.floor((dist % 86400000) / 3600000);
   const m = Math.floor((dist % 3600000) / 60000);
@@ -399,8 +398,9 @@ function tick() {
   setNum(mEl, pad(m));
   setNum(sEl, pad(s));
 }
+let timer;
 tick();
-const timer = setInterval(tick, 1000);
+timer = setInterval(tick, 1000);
 
 // Music
 const audio = document.getElementById('bg-music');
