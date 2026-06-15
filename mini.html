@@ -1,337 +1,514 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>¡Feliz Cumpleaños, Tsu!</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2589/2589175.png" type="image/png">
-  <style>
-    body {
-      background-color: #fff0f5; /* Un tono un poco más festivo y suave */
-      text-align: center;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      position: relative;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Feliz Cumpleaños, Tsu!</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    #mainContainer, #resultContainer, #heartEffectContainer {
-      padding-top: 60px;
-    }
+:root {
+  --ink: #e8e2d9;
+  --ink-muted: rgba(232,226,217,0.5);
+  --ink-faint: rgba(232,226,217,0.15);
+  --rose: #c9a0a0;
+  --rose-faint: rgba(201,160,160,0.1);
+  --gold: #c8b08a;
+}
 
-    #mainImage {
-      width: 160px;
-      margin-bottom: 20px;
-    }
+body {
+  background: #0c0a0f;
+  color: var(--ink);
+  font-family: 'Jost', sans-serif;
+  font-weight: 200;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
 
-    button {
-      margin: 10px;
-      padding: 12px 30px;
-      font-size: 22px;
-      background-color: #ff5c8a;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      position: relative;
-      font-weight: bold;
-    }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 180px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 1;
+}
 
-    h2 {
-      font-size: 30px;
-      margin-bottom: 10px;
-      color: #d81b60;
-    }
+.blob { position: fixed; border-radius: 50%; pointer-events: none; filter: blur(80px); z-index: 0; }
+.blob-1 { width: 400px; height: 400px; background: rgba(100,60,90,0.22); top: -100px; right: -80px; }
+.blob-2 { width: 280px; height: 280px; background: rgba(60,50,100,0.18); bottom: 0; left: -60px; }
 
-    #resultContainer, #heartEffectContainer {
-      display: none;
-    }
+canvas#stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-    #resultImage {
-      width: 200px;
-    }
+#app {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem 5rem;
+  text-align: center;
+}
 
-    /* Clase renombrada para elementos de fiesta pero manteniendo la misma animación */
-    .party-item {
-      position: fixed;
-      font-size: 24px;
-      animation: float 5s linear forwards;
-      pointer-events: none;
-      z-index: 999;
-    }
+.eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-bottom: 2rem;
+}
 
-    @keyframes float {
-      0% {
-        transform: translateY(0) scale(1) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-600px) scale(1.5) rotate(20deg);
-        opacity: 0;
-      }
-    }
+.panda-wrap {
+  position: relative;
+  margin-bottom: 2rem;
+}
 
-    #loadingText {
-      font-size: 28px;
-      font-weight: bold;
-      display: inline-block;
-      color: #c2185b;
-    }
+.panda-wrap img {
+  width: clamp(100px, 22vw, 150px);
+  border-radius: 50%;
+  border: 1px solid var(--ink-faint);
+  padding: 4px;
+}
 
-    #typeEffect {
-      font-size: 18px;
-      color: #9c27b0;
-      font-style: italic;
-      margin: 10px;
-      min-height: 24px;
-    }
+.panda-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,160,160,0.2);
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+.panda-ring-2 {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,160,160,0.08);
+  animation: pulse-ring 3s ease-in-out infinite 0.5s;
+}
 
-    footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background-color: #ffb3cc;
-      padding: 15px 10px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #660033;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      box-sizing: border-box;
-    }
+@keyframes pulse-ring {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.04); }
+}
 
-    .footer-top {
-      margin-bottom: 5px;
-      text-align: center;
-    }
+.heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(1.8rem, 5.5vw, 3rem);
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+.heading em { font-style: italic; color: var(--rose); }
 
-    .footer-text {
-      font-size: 18px;
-      color: #880e4f;
-    }
+.typetext {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: var(--ink-muted);
+  min-height: 1.6rem;
+  margin: 0.8rem 0 2rem;
+}
 
-    .footer-bottom {
-      font-size: 15px;
-      color: #4a148c;
-      text-align: center;
-    }
+.divider {
+  width: 40px;
+  height: 1px;
+  background: var(--rose);
+  opacity: 0.3;
+  margin: 0 auto 2rem;
+}
 
-    @media (max-width: 600px) {
-      #mainImage {
-        width: 100px;
-      }
+.btn-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
 
-      button {
-        font-size: 16px;
-        padding: 10px 20px;
-        max-width: 120px;
-      }
+.btn {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.7rem 2rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid var(--ink-faint);
+  background: none;
+  color: var(--ink-muted);
+}
 
-      #loadingText {
-        font-size: 20px;
-        padding: 0 10px;
-      }
+.btn-yes {
+  border-color: rgba(201,160,160,0.4);
+  color: var(--rose);
+}
+.btn-yes:hover { background: var(--rose-faint); }
 
-      h2 {
-        font-size: 22px;
-        padding: 0 10px;
-      }
+.btn-no {
+  position: absolute;
+}
+.btn-no:hover { color: var(--ink-muted); }
 
-      #resultImage {
-        width: 130px;
-      }
+#no-wrap { position: relative; width: 120px; height: 44px; }
 
-      #typeEffect {
-        font-size: 14px;
-        padding: 0 10px;
-      }
+.screen { display: none; width: 100%; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
 
-      #mainContainer, #resultContainer, #heartEffectContainer {
-        padding-top: 40px;
-        padding-left: 10px;
-        padding-right: 10px;
-      }
+.progress-wrap {
+  width: min(340px, 90vw);
+  margin: 2rem auto 1rem;
+}
 
-      footer {
-        padding: 10px;
-      }
+.progress-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  color: var(--ink-muted);
+  margin-bottom: 1.2rem;
+}
 
-      .footer-text {
-        font-size: 14px;
-      }
+.progress-bar-bg {
+  width: 100%;
+  height: 1px;
+  background: var(--ink-faint);
+  position: relative;
+}
 
-      .footer-bottom {
-        font-size: 13px;
-      }
-    }
-  </style>
+.progress-bar-fill {
+  height: 1px;
+  background: var(--rose);
+  width: 0%;
+  transition: width 0.05s linear;
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -2px;
+  width: 5px;
+  height: 5px;
+  background: var(--rose);
+  border-radius: 50%;
+}
+
+.progress-pct {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--rose);
+  margin-top: 0.8rem;
+  text-align: right;
+}
+
+.final-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.final-heading em { font-style: italic; color: var(--rose); }
+
+.final-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: var(--ink-muted);
+  margin-bottom: 2rem;
+}
+
+.gift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.8rem 2rem;
+  border-radius: 2px;
+  border: 1px solid rgba(200,176,138,0.35);
+  color: var(--gold);
+  background: rgba(200,176,138,0.06);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 0.5rem;
+}
+.gift-btn:hover { background: rgba(200,176,138,0.12); border-color: rgba(200,176,138,0.6); }
+
+.footer-strip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.9rem 1.5rem;
+  text-align: center;
+  border-top: 1px solid var(--ink-faint);
+  background: rgba(12,10,15,0.85);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.footer-strip p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
+  color: var(--ink-muted);
+}
+.footer-strip span {
+  font-style: normal;
+  color: var(--rose);
+}
+
+.particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  font-size: 1.2rem;
+  animation: floatUp 5s ease-out forwards;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-65vh) rotate(20deg); opacity: 0; }
+}
+
+@media (max-width: 480px) {
+  .btn-row { gap: 0.7rem; }
+  .btn { padding: 0.6rem 1.4rem; }
+}
+</style>
 </head>
 <body>
 
-<!-- Main Page -->
-<div id="mainContainer">
-  <img src="bubududu-panda.gif" id="mainImage" alt="Panda Image">
-  <h2>¿Soy tu mejor amigo, Tsu? 🥺</h2>
-  <p id="typeEffect"></p>
-  <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-    <button id="yesBtn">¡Sí!</button>
-    <button id="noBtn">No</button>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<canvas id="stars"></canvas>
+
+<div id="app">
+
+  <div id="screen-main" class="screen active">
+    <p class="eyebrow">para Tsu &nbsp;·&nbsp; con cariño</p>
+    <div class="panda-wrap">
+      <div class="panda-ring-2"></div>
+      <div class="panda-ring"></div>
+      <img src="bubududu-panda.gif" alt="Panda">
+    </div>
+    <h1 class="heading">¿Soy tu <em>mejor amigo</em>, Tsu?</h1>
+    <p class="typetext" id="typetext"></p>
+    <div class="divider"></div>
+    <div class="btn-row">
+      <button class="btn btn-yes" id="yes-btn">sí, claro</button>
+      <div id="no-wrap">
+        <button class="btn btn-no" id="no-btn" style="top:0;left:0;">para nada</button>
+      </div>
+    </div>
   </div>
+
+  <div id="screen-loading" class="screen">
+    <p class="eyebrow">procesando</p>
+    <div class="progress-wrap">
+      <p class="progress-label" id="loading-msg">calculando nuestra amistad...</p>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="prog-fill"></div>
+      </div>
+      <p class="progress-pct" id="prog-pct">0%</p>
+    </div>
+  </div>
+
+  <div id="screen-final" class="screen">
+    <p class="eyebrow">siempre lo supe</p>
+    <div class="panda-wrap" style="margin-bottom:1.5rem">
+      <div class="panda-ring-2"></div>
+      <div class="panda-ring"></div>
+      <img src="miss-you-hug.gif" alt="Hug">
+    </div>
+    <h2 class="final-heading">¡<em>Feliz Cumpleaños</em>, Tsu!</h2>
+    <p class="final-sub">Ya sabía que ibas a decir que sí.</p>
+    <div class="divider"></div>
+
+<button class="gift-btn" onclick="goTo('linea.html')">
+    linea de tiempo
+</button>
+
+<button class="gift-btn" onclick="goTo('logros.html')">
+    logros desbloqueados
+</button>
+
+<button class="gift-btn" onclick="goTo('https://open.spotify.com/playlist/6aXRNG7xZA2g0ZbfHsbil3?si=f656056a322e4d95')">
+    playlist
+</button>
+
+    <a href="./pdf/cupones.pdf" download="Cupones_Para_Tsu.pdf" class="gift-btn">
+      cupones para ti
+    </a>
+    <a href="./pdf/carta.pdf" download="Regalo_Para_Tsu.pdf" class="gift-btn">
+      cartita de regalo
+    </a>
+    
+
+  </div>
+
 </div>
 
-<!-- Animation Page -->
-<div id="heartEffectContainer">
-  <h2 id="loadingText">Procesando nuestra amistad virtual... 0% 🎈</h2>
+<div class="footer-strip">
+  <p>a pesar de la distancia, siempre celebrando contigo &nbsp;·&nbsp; con amor, <span>Akemi</span></p>
 </div>
 
-<!-- Final Result -->
-<!-- Final Result -->
-<div id="resultContainer">
-  <h2>¡Yo sabía que sí! 😍<br>¡Feliz Cumpleaños Tsu! 🎉🎂</h2>
-  <img src="miss-you-hug.gif" id="resultImage" alt="Hug Image">
-  <br><br>
-  <!-- Botón para descargar el PDF -->
-  <a href="regalo.pdf" download="Regalo_De_Akemi_Para_Tsu.pdf">
-    <button type="button" style="background-color: #9c27b0;">🎁 Descargar mi regalo 🎁</button>
-  </a>
-</div>
-
-<!-- Sounds -->
-<audio id="loveSound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
-<audio id="noSound" src="https://www.fesliyanstudios.com/play-mp3/6678" preload="auto"></audio>
-
-<!-- Footer -->
-<footer>
-  <div class="footer-top">
-    <span class="footer-text">
-      ✨ A pesar de la distancia, siempre celebrando contigo ✨
-    </span>
-  </div>
-  <div class="footer-bottom">
-    Hecho con muchísimo cariño para la mejor amigo virtual. Atte: <strong>Akemi</strong> 💖
-  </div>
-</footer>
+<audio id="snd-yes" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+<audio id="snd-no"  src="https://www.fesliyanstudios.com/play-mp3/6678" preload="auto"></audio>
 
 <script>
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn = document.getElementById("noBtn");
-  const mainContainer = document.getElementById("mainContainer");
-  const heartEffectContainer = document.getElementById("heartEffectContainer");
-  const resultContainer = document.getElementById("resultContainer");
-  const loveSound = document.getElementById("loveSound");
-  const noSound = document.getElementById("noSound");
-  const loadingText = document.getElementById("loadingText");
-
-  noBtn.addEventListener("mouseenter", () => {
-    noSound.currentTime = 0;
-    noSound.play();
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeC() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resizeC();
+addEventListener('resize', resizeC);
+for (let i = 0; i < 160; i++) {
+  stars.push({ x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*0.8+0.2, speed: Math.random()*0.004+0.002, phase: Math.random()*Math.PI*2 });
+}
+function drawS(t) {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s => {
+    const a = 0.15 + 0.55*(0.5+0.5*Math.sin(t*s.speed+s.phase));
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle = `rgba(232,226,217,${a.toFixed(3)})`; ctx.fill();
   });
+  requestAnimationFrame(drawS);
+}
+requestAnimationFrame(drawS);
 
-  noBtn.addEventListener("mouseover", () => {
-    const padding = 20;
-    const footerHeight = document.querySelector('footer').offsetHeight + 20;
-    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-    const maxY = window.innerHeight - noBtn.offsetHeight - footerHeight - padding;
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
+const msgs = [
+  "ni intentes escapar del botón",
+  "si le das al 'no', te bloqueo",
+  "tu internet no te da para atrapar el botón",
+  "sin 'sí' no hay regalo virtual",
+  "¿en serio vas a dudar en tu cumpleaños?",
+  "acepta que soy tu favorito, Tsu",
+  "cuidado, el botón 'no' tiene virus",
+  "el lag siempre está de mi lado",
+  "a un océano de distancia y sigues sin poder",
+  "si atrapas el 'no', pago la cena... (mentira)"
+];
+let mi = 0, ci = 0, del = false;
+const tel = document.getElementById('typetext');
+function typeLoop() {
+  const cur = msgs[mi];
+  if (del) { ci--; } else { ci++; }
+  tel.textContent = cur.substring(0, ci);
+  if (!del && ci === cur.length) setTimeout(() => del = true, 1100);
+  else if (del && ci === 0) { del = false; mi = (mi+1)%msgs.length; }
+  setTimeout(typeLoop, del ? 28 : 55);
+}
+typeLoop();
 
-    noBtn.style.position = 'absolute';
-    noBtn.style.left = `${x}px`;
-    noBtn.style.top = `${y}px`;
-  });
+const noBtn = document.getElementById('no-btn');
+const noWrap = document.getElementById('no-wrap');
+const sndNo = document.getElementById('snd-no');
 
-  yesBtn.addEventListener("click", () => {
-    mainContainer.style.display = "none";
-    heartEffectContainer.style.display = "block";
-    loveSound.play();
+noBtn.addEventListener('mouseenter', () => {
+  sndNo.currentTime = 0; sndNo.play().catch(()=>{});
+});
+noBtn.addEventListener('mouseover', () => {
+  const footer = 70;
+  const bw = noBtn.offsetWidth, bh = noBtn.offsetHeight;
+  const maxX = innerWidth - bw - 20;
+  const maxY = innerHeight - bh - footer - 20;
+  const x = Math.random()*maxX;
+  const y = Math.random()*maxY;
+  noBtn.style.position = 'fixed';
+  noBtn.style.left = x+'px';
+  noBtn.style.top = y+'px';
+  noBtn.style.zIndex = '100';
+});
 
-    let percent = 0;
-    const duration = 3000;
-    const intervalTime = duration / 100;
-
-    const heartInterval = setInterval(() => {
-      percent++;
-      loadingText.innerHTML = `Preparando la fiesta virtual... ${percent}% 🎈`;
-      createPartyItem();
-
-      if (percent >= 100) {
-        clearInterval(heartInterval);
-        heartEffectContainer.style.display = "none";
-        resultContainer.style.display = "block";
-      }
-    }, intervalTime);
-  });
-
-  function createPartyItem() {
-    const item = document.createElement("div");
-    item.classList.add("party-item");
-    
-    // Lista de emojis festivos en lugar de solo corazones
-    const emojis = ["🎂", "🎈", "🎉", "🎁", "💖", "🥳", "✨"];
-    item.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-    
-    item.style.left = Math.random() * 100 + "vw";
-    item.style.top = "100vh";
-    item.style.fontSize = Math.random() * 20 + 20 + "px";
-    document.body.appendChild(item);
-    setTimeout(() => {
-      item.remove();
-    }, 5000);
-  }
-
-  const textElement = document.getElementById("typeEffect");
-  
-  // Frases adaptadas para amigos virtuales y cumpleaños
-  const messages = [
-    "Ni intentes escapar", 
-    "Dale a 'No' si quieres que te bloquee", 
-    "Apuesto a que tu internet no te deja atrapar el 'No'",
-    "Si le das a 'No', no hay regalo virtual", 
-    "¿En serio vas a dudar justo en tu cumpleaños?", 
-    "Acepta de una vez que soy tu favorito",
-    "Cuidado, el botón 'No' tiene virus",
-    "El ping no te da para atrapar el botón", 
-    "Dale a 'Sí' y te mando pastel por delivery (mentira)",
-    "A un océano de distancia y sigues sin poder dar click", 
-    "Piénsalo bien, soy tu mejor opción de amistad",
-    "Si le das a 'No' lloro en la vida real", 
-    "La amistad virtual más real de todas",
-    "El lag está de mi lado", 
-    "Vamos, dale a 'Sí' para que empiece la fiesta",
-    "Si atrapas el 'No', pago la cena (cuando nos veamos)"
+document.getElementById('yes-btn').addEventListener('click', () => {
+  noBtn.style.position = '';
+  document.getElementById('snd-yes').play().catch(()=>{});
+  show('screen-loading');
+  let pct = 0;
+  const loadMsgs = [
+    'verificando nuestra amistad...',
+    'calculando años de cariño virtual...',
+    'procesando recuerdos importantes...',
+    'preparando la celebración...',
+    'casi listo, Tsu...'
   ];
+  const fill = document.getElementById('prog-fill');
+  const pctEl = document.getElementById('prog-pct');
+  const msgEl = document.getElementById('loading-msg');
+  const iv = setInterval(() => {
+    pct++;
+    fill.style.width = pct+'%';
+    pctEl.textContent = pct+'%';
+    msgEl.textContent = loadMsgs[Math.floor(pct/22)] || loadMsgs[loadMsgs.length-1];
+    spawnParticle();
+    if (pct >= 100) { clearInterval(iv); setTimeout(() => show('screen-final'), 400); }
+  }, 30);
+});
 
-  let messageIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-  function typeLoop() {
-    const currentText = messages[messageIndex];
-    if (isDeleting) {
-      charIndex--;
-      textElement.textContent = currentText.substring(0, charIndex);
-    } else {
-      charIndex++;
-      textElement.textContent = currentText.substring(0, charIndex);
+const emojis = ['🎂','🎈','🎉','🎁','💖','🥳','✨','🌸','🍰'];
+function spawnParticle() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  p.style.left = Math.random()*100+'vw';
+  p.style.bottom = '60px';
+  p.style.fontSize = (Math.random()*14+14)+'px';
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 5000);
+}
+
+function goTo(url){
+
+    const mus = document.getElementById('bg-music');
+
+    if(mus){
+        mus.pause();
     }
 
-    if (!isDeleting && charIndex === currentText.length) {
-      setTimeout(() => isDeleting = true, 1000);
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      messageIndex = (messageIndex + 1) % messages.length;
-    }
+    window.open(url, "_blank");
 
-    setTimeout(typeLoop, isDeleting ? 30 : 60);
-  }
+    const checkFocus = setInterval(() => {
 
-  typeLoop();
+        if(document.hasFocus()){
+
+            if(mus){
+                mus.play().catch(()=>{});
+            }
+
+            clearInterval(checkFocus);
+
+        }
+
+    }, 1000);
+
+}
+
 </script>
 
+<audio id="bg-music" src="./audio/mon.mp3" loop autoplay></audio>
 </body>
 </html>

@@ -356,26 +356,35 @@ function generateBalloonPath( x, y, size ){
 									   x,            y );
 }
 
+var redirected = false;
+
 function anim(){
-    window.requestAnimationFrame( anim );
-    
+    window.requestAnimationFrame(anim);
+
     ctx.fillStyle = '#111';
-    ctx.fillRect( 0, 0, w, h );
-    
-    ctx.translate( hw, hh );
-    
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.translate(hw, hh);
+
     var done = true;
-    for( var l = 0; l < letters.length; ++l ){
-        letters[ l ].step();
-        if( letters[ l ].phase !== 'done' )
+
+    for(var l = 0; l < letters.length; ++l){
+        letters[l].step();
+
+        if(letters[l].phase !== 'done')
             done = false;
     }
-    
-    ctx.translate( -hw, -hh );
-    
-    // MODIFICACIÓN: Si la animación termina, mostramos el botón en lugar de reiniciar
-    if( done ) {
-        document.getElementById('next-btn').classList.add('show');
+
+    ctx.translate(-hw, -hh);
+
+    if(done && !redirected){
+
+        redirected = true;
+
+        setTimeout(() => {
+            window.location.href = "mini.html";
+        }, 1500);
+
     }
 }
 
